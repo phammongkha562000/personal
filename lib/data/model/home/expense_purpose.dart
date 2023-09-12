@@ -10,4 +10,18 @@ class ExpensePurpose {
     this.totalExpense,
     this.idTotalIncome,
   });
+
+  ExpensePurpose copyWith({
+    int? id,
+    String? name,
+    double? totalExpense,
+    int? idTotalIncome,
+  }) {
+    return ExpensePurpose(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      totalExpense: totalExpense ?? this.totalExpense,
+      idTotalIncome: idTotalIncome ?? this.idTotalIncome,
+    );
+  }
 }

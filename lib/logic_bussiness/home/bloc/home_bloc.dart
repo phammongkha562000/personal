@@ -25,6 +25,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final box = await Hive.openBox(KeyBox.boxTotalIncome);
       final data = await box.get(KeyName.totalIncome);
       TotalIncome totalIncome = TotalIncome();
+      List<ExpensePurpose> itemTest = [];
+      Map<String, double> dataMap = {};
+
       if (data != null) {
         List<TotalIncome> totalIncomes = data.cast<TotalIncome>();
         List<TotalIncome> a = totalIncomes
@@ -38,17 +41,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             .toList();
         if (a != []) {
           totalIncome = a.last;
-        }
-      }
-      List<ExpensePurpose> itemTest = [
-        ExpensePurpose(
-            id: 1, name: 'Còn lại', totalExpense: totalIncome.totalIncome),
-      ];
-      Map<String, double> dataMap = {};
+          itemTest = [
+            ExpensePurpose(
+                id: 1,
+                name: 'Còn lại',
+                totalExpense: totalIncome.totalIncome,
+                idTotalIncome: totalIncome.id!),
+          ];
+          dataMap = {};
 
-      for (var element in itemTest) {
-        final planets = <String, double>{element.name!: element.totalExpense!};
-        dataMap.addAll(planets);
+          for (var element in itemTest) {
+            final planets = <String, double>{
+              element.name!: element.totalExpense!
+            };
+            dataMap.addAll(planets);
+          }
+        } else {
+          dataMap = {};
+        }
       }
 
       emit(HomeSuccess(
@@ -65,10 +75,34 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeLoading());
         final dataMap = currentState.maps;
         List<ExpensePurpose> itemTest = currentState.purposeList;
-        final newItem = <String, double>{event.item.name!: event.item.totalExpense!};
+        // List<ExpensePurpose> itemTestNew = [];
+
         itemTest.add(event.item);
-        dataMap.addAll(newItem);
-        emit(currentState.copyWith(maps: dataMap, purposeList: itemTest));
+
+        // itemTestNew = itemTest
+        //     .map((e) => e.copyWith(
+        //         totalExpense:
+        //             e.totalExpense! / currentState.totalIncome.totalIncome! * 100))
+        //     .toList();
+        double sum = 0;
+        for (var element in itemTest) {
+          if (element.id != 1) {
+            sum += element.totalExpense!;
+          }
+        }
+          final itemTestNew2 = itemTest
+              .map((e) => e.id == 1
+                  ? e.copyWith(
+                      totalExpense: (currentState.totalIncome.totalIncome! - sum))
+                  : e)
+              .toList();
+          for (var element2 in itemTestNew2) {
+            final newItem = <String, double>{
+              element2.name!: element2.totalExpense!
+            };
+            dataMap.addAll(newItem);
+          }
+        emit(currentState.copyWith(maps: dataMap, purposeList: itemTestNew2));
       }
     } catch (e) {}
   }

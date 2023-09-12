@@ -16,19 +16,12 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => HomeViewState();
 }
 
-Map<String, double> dataMap = {
-  "Nhà": 5,
-  "Nấu ăn": 3,
-  "Ăn ngoài": 2,
-  "Lặt vặt": 2,
-  "Mua sắm": 1,
-  "Còn lại": 1,
-};
 final colorList = <Color>[
   const Color(0xfffdcb6e),
   const Color(0xff0984e3),
   const Color(0xfffd79a8),
   const Color(0xffe17055),
+  const Color(0xffb00020),
   const Color(0xff6c5ce7),
   const Color(0xff03ffcd),
 ];
@@ -102,58 +95,70 @@ class HomeViewState extends State<HomeView>
                       // color: Colors.white,
                       duration: controller.duration!,
                       child: controller.status == AnimationStatus.dismissed
-                          ? Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(32)),
-                              color: Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 24, horizontal: 16),
-                                child: Column(
-                                  children: [
-                                    _buildForm(state: state),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: PieChart(
-                                        dataMap: state.maps,
-                                        animationDuration:
-                                            const Duration(milliseconds: 1000),
-                                        // chartLegendSpacing: 32,
-                                        chartRadius:
-                                            MediaQuery.of(context).size.width /
-                                                3.2,
-                                        colorList: colorList,
-                                        initialAngleInDegree: 0,
-                                        chartType: ChartType.ring,
-                                        ringStrokeWidth: 32,
-                                        centerText: state
-                                            .totalIncome.totalIncome
-                                            .toString(),
-                                        legendOptions: const LegendOptions(
-                                          showLegendsInRow: false,
-                                          legendPosition: LegendPosition.right,
-                                          showLegends: true,
-                                          legendShape: BoxShape.circle,
-                                          legendTextStyle: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        chartValuesOptions:
-                                            const ChartValuesOptions(
-                                          showChartValueBackground: true,
-                                          showChartValues: true,
-                                          showChartValuesInPercentage: false,
-                                          showChartValuesOutside: false,
-                                          decimalPlaces: 1,
-                                        ),
-                                        // gradientList: ---To add gradient colors---
-                                        // emptyColorGradient: ---Empty Color gradient---
-                                      ),
-                                    ),
-                                  ],
+                          ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(32)),
+                                color: Colors.white,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 24, horizontal: 16),
+                                  child: Column(
+                                    children: [
+                                      _buildForm(state: state),
+                                      state.maps.isEmpty
+                                          ? SizedBox()
+                                          : Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: PieChart(
+                                                // totalValue: state.totalIncome.totalIncome,
+                                                dataMap: state.maps,
+                                                animationDuration: const Duration(
+                                                    milliseconds: 1000),
+                                                // chartLegendSpacing: 32,
+                                                chartRadius:
+                                                    MediaQuery.of(context)
+                                                            .size
+                                                            .width /
+                                                        3.2,
+                                                colorList: colorList,
+                                                initialAngleInDegree: 0,
+                                                chartType: ChartType.ring,
+                                                ringStrokeWidth: 32,
+                                                centerText: state
+                                                    .totalIncome.totalIncome
+                                                    .toString(),
+                                                legendOptions:
+                                                    const LegendOptions(
+                                                  showLegendsInRow: false,
+                                                  legendPosition:
+                                                      LegendPosition.right,
+                                                  showLegends: true,
+                                                  legendShape: BoxShape.circle,
+                                                  legendTextStyle: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                chartValuesOptions:
+                                                    const ChartValuesOptions(
+                                                  showChartValueBackground: true,
+                                                  showChartValues: true,
+                                                  showChartValuesInPercentage:
+                                                      true,
+                                                  showChartValuesOutside: true,
+                                                  decimalPlaces: 1,
+                                                ),
+                                                // gradientList: ---To add gradient colors---
+                                                // emptyColorGradient: ---Empty Color gradient---
+                                              ),
+                                            ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            )
+                          )
                           : SizedBox(),
                     ),
                   ]),
