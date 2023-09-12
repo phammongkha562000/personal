@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
 
-import 'file_adapter/total_income_adapter.dart';
+import 'file_adapter/file_adapter.dart';
 import 'hive_key/key_box.dart';
 
 class HiveBoxHelper {
@@ -18,7 +18,8 @@ class HiveBoxHelper {
 
     Hive
       ..init(path)
-      ..registerAdapter(TotalIncomeAdapter(0));
+      ..registerAdapter(TotalIncomeAdapter(0))
+      ..registerAdapter(ExpensePurposeAdapter(1));
   }
 
   static closeHive() {

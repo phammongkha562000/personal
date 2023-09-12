@@ -24,13 +24,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final box = await Hive.openBox(KeyBox.boxTotalIncome);
       final data = await box.get(KeyName.totalIncome);
-      TotalIncome totalIncome = TotalIncome();
-      List<ExpensePurpose> itemTest = [];
+      TotalIncome? totalIncome;
+      List<ExpensePurpose> expensePurposeList = [];
       Map<String, double> dataMap = {};
 
       if (data != null) {
         List<TotalIncome> totalIncomes = data.cast<TotalIncome>();
-        List<TotalIncome> a = totalIncomes
+        List<TotalIncome> currentTotalIncomes = totalIncomes
             .where((element) =>
                 FormatDateConstants.convertUTCtoDateTime(element.dateTime!)
                         .year ==
@@ -39,18 +39,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                         .month ==
                     DateTime.now().month)
             .toList();
-        if (a != []) {
-          totalIncome = a.last;
-          itemTest = [
-            ExpensePurpose(
-                id: 1,
-                name: 'Còn lại',
-                totalExpense: totalIncome.totalIncome,
-                idTotalIncome: totalIncome.id!),
-          ];
-          dataMap = {};
-
-          for (var element in itemTest) {
+        if (currentTotalIncomes != []) {
+          totalIncome = currentTotalIncomes.last;
+          final boxExpense = await Hive.openBox(KeyBox.boxExpensePurpose);
+          final dataExpense = await boxExpense.get(KeyName.expensePurposeKey);
+          if (dataExpense != null) {
+            List<ExpensePurpose> expenseList =
+                dataExpense.cast<ExpensePurpose>();
+            List<ExpensePurpose> currentExpenseInMonth = expenseList
+                .where((element) => element.idTotalIncome == totalIncome!.id)
+                .toList();
+            expensePurposeList = currentExpenseInMonth;
+          } else {
+            expensePurposeList = [
+              ExpensePurpose(
+                  id: 1,
+                  name: 'Còn lại',
+                  totalExpense: totalIncome.totalIncome,
+                  idTotalIncome: totalIncome.id!),
+            ];
+          }
+          for (var element in expensePurposeList) {
             final planets = <String, double>{
               element.name!: element.totalExpense!
             };
@@ -62,47 +71,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
 
       emit(HomeSuccess(
-          purposeList: itemTest, maps: dataMap, totalIncome: totalIncome));
+          expensePurposeList: expensePurposeList,
+          dataMap: dataMap,
+          totalIncome: totalIncome));
     } catch (e) {
       print(e.toString());
     }
   }
 
-  void _mapChangePercentToState(HomeChangePercent event, emit) {
+  Future<void> _mapChangePercentToState(HomeChangePercent event, emit) async {
     try {
       final currentState = state;
       if (currentState is HomeSuccess) {
         emit(HomeLoading());
-        final dataMap = currentState.maps;
-        List<ExpensePurpose> itemTest = currentState.purposeList;
-        // List<ExpensePurpose> itemTestNew = [];
+        final dataMap = currentState.dataMap;
+        List<ExpensePurpose> expensePurposeList =
+            currentState.expensePurposeList;
 
-        itemTest.add(event.item);
+        expensePurposeList.add(event.item);
 
-        // itemTestNew = itemTest
-        //     .map((e) => e.copyWith(
-        //         totalExpense:
-        //             e.totalExpense! / currentState.totalIncome.totalIncome! * 100))
-        //     .toList();
         double sum = 0;
-        for (var element in itemTest) {
+        for (var element in expensePurposeList) {
           if (element.id != 1) {
             sum += element.totalExpense!;
           }
         }
-          final itemTestNew2 = itemTest
-              .map((e) => e.id == 1
-                  ? e.copyWith(
-                      totalExpense: (currentState.totalIncome.totalIncome! - sum))
-                  : e)
-              .toList();
-          for (var element2 in itemTestNew2) {
-            final newItem = <String, double>{
-              element2.name!: element2.totalExpense!
-            };
-            dataMap.addAll(newItem);
-          }
-        emit(currentState.copyWith(maps: dataMap, purposeList: itemTestNew2));
+        final itemTestNew2 = expensePurposeList
+            .map((e) => e.id == 1
+                ? e.copyWith(
+                    totalExpense:
+                        (currentState.totalIncome!.totalIncome! - sum))
+                : e)
+            .toList();
+        for (var element2 in itemTestNew2) {
+          final newItem = <String, double>{
+            element2.name!: element2.totalExpense!
+          };
+          dataMap.addAll(newItem);
+        }
+        final box = await Hive.openBox(KeyBox.boxExpensePurpose);
+        box.put(KeyName.expensePurposeKey, itemTestNew2);
+        emit(currentState.copyWith(
+          dataMap: dataMap,
+          expensePurposeList: itemTestNew2,
+        ));
       }
     } catch (e) {}
   }
@@ -115,6 +127,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final box = await Hive.openBox(KeyBox.boxTotalIncome);
         final data = await box.get(KeyName.totalIncome);
         int date = DateTime.now().millisecondsSinceEpoch;
+
         List<TotalIncome> totalIncomes = [];
         TotalIncome newItem = TotalIncome();
         if (data != null) {
@@ -131,13 +144,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         box.put(KeyName.totalIncome, totalIncomes);
         log('HIVE - SAVE ${KeyName.totalIncome}');
 
-//lại mở
+        //sao khi add, mở lại
         final box2 = await Hive.openBox(KeyBox.boxTotalIncome);
 
         final data2 = await box2.get(KeyName.totalIncome);
 
         if (data2 != null) {
-          List<TotalIncome> totalIncomes = data.cast<TotalIncome>();
+          List<TotalIncome> totalIncomes = data2.cast<TotalIncome>();
           List<TotalIncome> a = totalIncomes
               .where((element) =>
                   FormatDateConstants.convertUTCtoDateTime(element.dateTime!)
@@ -151,8 +164,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             newItem = a.last;
           }
         }
+        List<ExpensePurpose> itemTest = [];
+        Map<String, double> dataMap = {};
+        itemTest = [
+          ExpensePurpose(
+              id: 1,
+              name: 'Còn lại',
+              totalExpense: newItem.totalIncome,
+              idTotalIncome: newItem.id),
+        ];
 
-        emit(currentState.copyWith(totalIncome: newItem));
+        for (var element in itemTest) {
+          final planets = <String, double>{
+            element.name!: element.totalExpense!
+          };
+          dataMap.addAll(planets);
+        }
+
+        emit(currentState.copyWith(totalIncome: newItem, dataMap: dataMap));
       }
     } catch (e) {}
   }

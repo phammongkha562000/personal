@@ -2,7 +2,7 @@
 
 class KeyBox {
   static String boxTotalIncome = "total_income_box";
-  static String boxExpense = "expense_box";
+  static String boxExpensePurpose = "expense_purpose_box";
 
-  static List<String> listBox = [boxTotalIncome, boxExpense];
+  static List<String> listBox = [boxTotalIncome, boxExpensePurpose];
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_manager/presentations/common/colors.dart' as colors;
 
 // class AppBarRadius extends AppBar {
 //   AppBarRadius(
@@ -40,12 +41,12 @@ class AppbarRadius extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(64),
             bottomRight: Radius.circular(64),
           ),
-          color: Color(0xFF4e4e4e)),
+          color: colors.defaultColor2),
       height: preferredSize.height,
       alignment: Alignment.center,
       child: child,

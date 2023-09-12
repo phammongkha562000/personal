@@ -5,7 +5,7 @@ class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class HomeInitial extends HomeState {}
@@ -13,25 +13,25 @@ class HomeInitial extends HomeState {}
 class HomeLoading extends HomeState {}
 
 class HomeSuccess extends HomeState {
-  final TotalIncome totalIncome;
-  final List<ExpensePurpose> purposeList;
-  final Map<String, double> maps;
+  final TotalIncome? totalIncome;
+  final List<ExpensePurpose> expensePurposeList;
+  final Map<String, double> dataMap;
   const HomeSuccess({
     required this.totalIncome,
-    required this.purposeList,
-    required this.maps,
+    required this.expensePurposeList,
+    required this.dataMap,
   });
   @override
-  List<Object> get props => [purposeList, maps, totalIncome];
+  List<Object?> get props => [expensePurposeList, dataMap, totalIncome];
 
   HomeSuccess copyWith({
-    List<ExpensePurpose>? purposeList,
-    Map<String, double>? maps,
+    List<ExpensePurpose>? expensePurposeList,
+    Map<String, double>? dataMap,
     TotalIncome? totalIncome,
   }) {
     return HomeSuccess(
-      purposeList: purposeList ?? this.purposeList,
-      maps: maps ?? this.maps,
+      expensePurposeList: expensePurposeList ?? this.expensePurposeList,
+      dataMap: dataMap ?? this.dataMap,
       totalIncome: totalIncome ?? this.totalIncome,
     );
   }
