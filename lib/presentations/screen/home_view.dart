@@ -11,6 +11,7 @@ import 'package:pie_chart/pie_chart.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'dart:math' as math;
 import '../../data/model/home/expense_purpose.dart';
+import '../../data/shared/utils/format_number.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -30,20 +31,9 @@ final colorList = <Color>[
   const Color(0xff61d800),
   const Color(0xff4E342E)
 ];
-ChartType? _chartType = ChartType.disc;
-int _page = 0;
-GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
 class HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
-  // late final controller = AnimationController(
-  //     vsync: this, duration: const Duration(milliseconds: 200))
-  //   ..addListener(() {
-  //     // setState(() {});
-  //   });
-  // late final animation = Tween<Matrix4>(
-  //         begin: Matrix4.translationValues(-1, 48, 0), end: Matrix4.identity())
-  //     .animate(controller);
   final TextEditingController _totalIncomeController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _percentController = TextEditingController();
@@ -59,94 +49,84 @@ class HomeViewState extends State<HomeView>
               color: colors.defaultColor1, fontWeight: FontWeight.bold),
         ),
       ),
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
-          if (state is HomeSuccess) {
-            state.totalIncome != null
-                ? {
-                    _totalIncomeController.text =
-                        state.totalIncome!.totalIncome.toString()
-                  }
-                : {};
-            return SingleChildScrollView(
-              child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.center,
+      body: BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+        if (state is HomeSuccess) {
+          state.totalIncome != null
+              ? {
+                  _totalIncomeController.text =
+                      state.totalIncome!.totalIncome.toString()
+                }
+              : {};
+          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Image.asset(
+              assets.kIconBook,
+              fit: BoxFit.cover,
+            ),
+            Card(
+              margin: const EdgeInsets.all(16),
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(32)),
+              color: colors.lavender,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            assets.kIconBook,
-                            fit: BoxFit.cover,
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        'Còn lại: ${state.expensePurposeList.where((element) => element.id == 1).single.totalExpense}',
+                        style: const TextStyle(
+                            color: colors.spanishLavender,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32)),
-                        color: colors.lavender,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 24, horizontal: 16),
-                          child: Column(
-                            children: [
-                              _buildForm(state: state),
-                              state.totalIncome == null
-                                  ? SizedBox()
-                                  : Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: PieChart(
-                                        // totalValue: state.totalIncome.totalIncome,
-                                        dataMap: state.dataMap,
-                                        animationDuration:
-                                            const Duration(milliseconds: 1000),
-                                        // chartLegendSpacing: 32,
-                                        chartRadius:
-                                            MediaQuery.of(context).size.width /
-                                                3.2,
-                                        colorList: colorList,
-                                        initialAngleInDegree: 0,
-                                        chartType: ChartType.ring,
-                                        ringStrokeWidth: 32,
-                                        centerText: state
-                                            .totalIncome!.totalIncome
-                                            .toString(),
-                                        legendOptions: const LegendOptions(
-                                          showLegendsInRow: false,
-                                          legendPosition: LegendPosition.right,
-                                          showLegends: true,
-                                          legendShape: BoxShape.circle,
-                                          legendTextStyle: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        chartValuesOptions:
-                                            const ChartValuesOptions(
-                                          showChartValueBackground: true,
-                                          showChartValues: true,
-                                          showChartValuesInPercentage: true,
-                                          showChartValuesOutside: true,
-                                          decimalPlaces: 1,
-                                        ),
-                                        // gradientList: ---To add gradient colors---
-                                        // emptyColorGradient: ---Empty Color gradient---
-                                      ),
-                                    ),
-                            ],
+                    _buildForm(state: state),
+                    state.totalIncome == null
+                        ? const SizedBox()
+                        : PieChart(
+                            // totalValue: state.totalIncome.totalIncome,
+
+                            dataMap: state.dataMap,
+                            animationDuration:
+                                const Duration(milliseconds: 1000),
+                            // chartLegendSpacing: 32,
+                            chartRadius:
+                                MediaQuery.of(context).size.width / 3.2,
+                            colorList: colorList,
+                            initialAngleInDegree: 0,
+                            chartType: ChartType.ring,
+                            ringStrokeWidth: 32,
+                            centerText:
+                                state.totalIncome!.totalIncome.toString(),
+                            legendOptions: const LegendOptions(
+                              showLegendsInRow: false,
+                              legendPosition: LegendPosition.right,
+                              showLegends: true,
+                              legendShape: BoxShape.circle,
+                              legendTextStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            chartValuesOptions: const ChartValuesOptions(
+                              showChartValueBackground: true,
+                              showChartValues: true,
+                              showChartValuesInPercentage: true,
+                              showChartValuesOutside: true,
+                              decimalPlaces: 1,
+                            ),
+                            // gradientList: ---To add gradient colors---
+                            // emptyColorGradient: ---Empty Color gradient---
                           ),
-                        ),
-                      ),
-                    )
-                  ]),
-            );
-          }
-          return CircularProgressIndicator();
-        },
-      ),
+                  ],
+                ),
+              ),
+            )
+          ]);
+        }
+        return CircularProgressIndicator();
+      }),
       // bottomNavigationBar: CurvedNavigationBar(
       //   key: _bottomNavigationKey,
       //   index: 0,
@@ -174,82 +154,88 @@ class HomeViewState extends State<HomeView>
   }
 
   Widget _buildForm({required HomeSuccess state}) {
-    return SingleChildScrollView(
-      child: state.dataMap.isEmpty
-          ? Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: colors.defaultColor1)),
+    return state.dataMap.isEmpty
+        ? Row(
+            children: [
+              Expanded(
+                flex: 7,
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [NumberFormatter.formatMoney],
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    controller: _totalIncomeController,
                   ),
+                  controller: _totalIncomeController,
                 ),
-                Padding(
+              ),
+              Expanded(
+                flex: 3,
+                child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: ElevatedButton(
                       onPressed: () {
                         BlocProvider.of<HomeBloc>(context).add(
                             HomeAddTotalIncome(
-                                totalIncome:
-                                    double.parse(_totalIncomeController.text)));
+                                totalIncome: double.parse(_totalIncomeController
+                                    .text
+                                    .replaceAll(',', ''))));
                       },
                       child: const Text('Add total')),
-                )
-              ],
-            )
-          : Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          label: Text('Purpose'),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(
-                                  color: colors.defaultColor1)),
-                        ),
-                        controller: _nameController,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          label: Text('Money'),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide:
-                                  BorderSide(color: colors.defaultColor1)),
-                        ),
-                        controller: _percentController,
-                      ),
-                    ),
-                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, bottom: 24),
-                  child: ElevatedButton(
-                      onPressed: () {
-                        BlocProvider.of<HomeBloc>(context).add(
-                            HomeChangePercent(
-                                item: ExpensePurpose(
-                                    id: state.expensePurposeList.length + 1,
-                                    name: _nameController.text,
-                                    idTotalIncome: state.totalIncome!.id,
-                                    totalExpense: double.parse(
-                                        _percentController.text))));
-                      },
-                      child: Text('Add expense purpose')),
-                ),
-              ],
-            ),
-    );
+              )
+            ],
+          )
+        : Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        label: Text('Purpose'),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide:
+                                const BorderSide(color: colors.defaultColor1)),
+                      ),
+                      controller: _nameController,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [NumberFormatter.formatMoney],
+                      decoration: InputDecoration(
+                        label: Text('Money'),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide:
+                                BorderSide(color: colors.defaultColor1)),
+                      ),
+                      controller: _percentController,
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 12.0, bottom: 24),
+                child: ElevatedButton(
+                    onPressed: () {
+                      BlocProvider.of<HomeBloc>(context).add(HomeChangePercent(
+                          item: ExpensePurpose(
+                              id: state.expensePurposeList.length + 1,
+                              name: _nameController.text,
+                              idTotalIncome: state.totalIncome!.id,
+                              totalExpense: double.parse(_percentController.text
+                                  .replaceAll(',', '')))));
+                    },
+                    child: Text('Add expense purpose')),
+              ),
+            ],
+          );
   }
 }
 

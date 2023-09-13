@@ -9,6 +9,8 @@ import 'package:personal_manager/presentations/common/constants.dart'
     as constants;
 import 'package:personal_manager/presentations/screen/home_view.dart';
 
+import 'statistical/category_view.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -16,19 +18,40 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-int _selectedIndex = 0;
-final List<Widget> _pages = List.generate(4, (index) => SizedBox());
+// final List<Widget> _pages = List.generate(4, (index) => const SizedBox());
 GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
-int _page = 0;
+// int _page = 0;
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  final screens = [
+    BlocProvider(
+      create: (context) => HomeBloc()..add(HomeViewLoaded()),
+      child: const HomeView(),
+    ),
+    // SizedBox(
+    //   child: Text('1'),
+    // ),
+    CategoryView(),
+    SizedBox(
+      child: Text('3'),
+    )
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        child: Center(
+          child: screens[_selectedIndex],
+        ),
+      ),
+
+      /*  IndexedStack(
         index: _selectedIndex,
         children: _pages,
-      ),
+      ), */
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         index: _selectedIndex,
@@ -44,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         buttonBackgroundColor: colors.defaultColor2,
         backgroundColor: colors.defaultColor1,
         animationCurve: Curves.easeInOut,
-        animationDuration: Duration(milliseconds: 600),
+        animationDuration: const Duration(milliseconds: 600),
         onTap: _selectedPage,
         letIndexChange: (index) => true,
       ),
@@ -53,31 +76,32 @@ class _HomePageState extends State<HomePage> {
 
   void _selectedPage(int index) {
     setState(() {
-      switch (index) {
-        case constants.homeBottomNavigation:
-          _pages.insert(index, _buildHomeWidget(context));
+      _selectedIndex = index;
+      // switch (index) {
+      //   case constants.homeBottomNavigation:
+      //     _pages.insert(index, _buildHomeWidget(context));
 
-          break;
-        case constants.summaryBottomNavigation:
-          _pages.insert(index, _build2Widget(context));
-          break;
-        case constants.settingBottomNavigation:
-          _pages.insert(index, _buildSettingWidget(context));
-          break;
+      //     break;
+      //   case constants.summaryBottomNavigation:
+      //     _pages.insert(index, _build2Widget(context));
+      //     break;
+      //   case constants.settingBottomNavigation:
+      //     _pages.insert(index, _buildSettingWidget(context));
+      //     break;
 
-        default:
-      }
+      //   default:
+      // }
     });
   }
 
   _buildHomeWidget(BuildContext context) => BlocProvider(
         create: (context) => HomeBloc()..add(HomeViewLoaded()),
-        child: HomeView(),
+        child: const HomeView(),
       );
-  _build2Widget(BuildContext context) => SizedBox(
+  _build2Widget(BuildContext context) => const SizedBox(
         child: Text('2'),
       );
-  _buildSettingWidget(BuildContext context) => SizedBox(
+  _buildSettingWidget(BuildContext context) => const SizedBox(
         child: Text('3'),
       );
 }

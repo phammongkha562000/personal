@@ -93,7 +93,7 @@ InputDecorationTheme inputDecorationTheme2() {
   return InputDecorationTheme(
     filled: true,
     fillColor: colors.defaultColor1,
-    // contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+    contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
     focusedBorder: focusBorder,
     border: border,
     enabledBorder: border,

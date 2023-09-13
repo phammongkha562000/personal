@@ -46,7 +46,7 @@ class AppbarRadius extends StatelessWidget implements PreferredSizeWidget {
             bottomLeft: Radius.circular(64),
             bottomRight: Radius.circular(64),
           ),
-          color: colors.defaultColor2),
+          color: colors.darkLiver),
       height: preferredSize.height,
       alignment: Alignment.center,
       child: child,
