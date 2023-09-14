@@ -164,24 +164,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             newItem = a.last;
           }
         }
-        List<ExpensePurpose> itemTest = [];
+        List<ExpensePurpose> expensePurposeList = [];
         Map<String, double> dataMap = {};
-        itemTest = [
+        expensePurposeList = [
           ExpensePurpose(
               id: 1,
               name: 'Còn lại',
               totalExpense: newItem.totalIncome,
               idTotalIncome: newItem.id),
         ];
+        final boxExpense = await Hive.openBox(KeyBox.boxExpensePurpose);
+        boxExpense.put(KeyName.expensePurposeKey, expensePurposeList);
 
-        for (var element in itemTest) {
+        for (var element in expensePurposeList) {
           final planets = <String, double>{
             element.name!: element.totalExpense!
           };
           dataMap.addAll(planets);
         }
 
-        emit(currentState.copyWith(totalIncome: newItem, dataMap: dataMap));
+        emit(currentState.copyWith(
+            totalIncome: newItem,
+            dataMap: dataMap,
+            expensePurposeList: expensePurposeList));
       }
     } catch (e) {}
   }

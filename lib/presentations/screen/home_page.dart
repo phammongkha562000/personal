@@ -1,14 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:personal_manager/logic_bussiness/home/bloc/home_bloc.dart';
 import 'package:personal_manager/presentations/common/colors.dart' as colors;
-import 'package:personal_manager/presentations/common/constants.dart'
-    as constants;
 import 'package:personal_manager/presentations/screen/home_view.dart';
 
+import '../../logic_bussiness/home/category/bloc/category_bloc.dart';
+import '../../logic_bussiness/home/home/home_bloc.dart';
 import 'statistical/category_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -32,7 +29,10 @@ class _HomePageState extends State<HomePage> {
     // SizedBox(
     //   child: Text('1'),
     // ),
-    CategoryView(),
+    BlocProvider(
+      create: (context) => CategoryBloc()..add(CategoryViewLoaded()),
+      child: CategoryView(),
+    ),
     SizedBox(
       child: Text('3'),
     )

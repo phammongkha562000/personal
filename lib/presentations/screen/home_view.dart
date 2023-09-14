@@ -1,17 +1,13 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:personal_manager/data/model/home/total_income.dart';
-import 'package:personal_manager/logic_bussiness/home/bloc/home_bloc.dart';
 import 'package:personal_manager/presentations/common/assets.dart' as assets;
 import 'package:personal_manager/presentations/common/colors.dart' as colors;
 import 'package:personal_manager/presentations/components/appbar_radius.dart';
 import 'package:pie_chart/pie_chart.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'dart:math' as math;
 import '../../data/model/home/expense_purpose.dart';
 import '../../data/shared/utils/format_number.dart';
+import '../../logic_bussiness/home/home/home_bloc.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -57,73 +53,75 @@ class HomeViewState extends State<HomeView>
                       state.totalIncome!.totalIncome.toString()
                 }
               : {};
-          return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Image.asset(
-              assets.kIconBook,
-              fit: BoxFit.cover,
-            ),
-            Card(
-              margin: const EdgeInsets.all(16),
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32)),
-              color: colors.lavender,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        'Còn lại: ${state.expensePurposeList.where((element) => element.id == 1).single.totalExpense}',
-                        style: const TextStyle(
-                            color: colors.spanishLavender,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    _buildForm(state: state),
-                    state.totalIncome == null
-                        ? const SizedBox()
-                        : PieChart(
-                            // totalValue: state.totalIncome.totalIncome,
-
-                            dataMap: state.dataMap,
-                            animationDuration:
-                                const Duration(milliseconds: 1000),
-                            // chartLegendSpacing: 32,
-                            chartRadius:
-                                MediaQuery.of(context).size.width / 3.2,
-                            colorList: colorList,
-                            initialAngleInDegree: 0,
-                            chartType: ChartType.ring,
-                            ringStrokeWidth: 32,
-                            centerText:
-                                state.totalIncome!.totalIncome.toString(),
-                            legendOptions: const LegendOptions(
-                              showLegendsInRow: false,
-                              legendPosition: LegendPosition.right,
-                              showLegends: true,
-                              legendShape: BoxShape.circle,
-                              legendTextStyle: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            chartValuesOptions: const ChartValuesOptions(
-                              showChartValueBackground: true,
-                              showChartValues: true,
-                              showChartValuesInPercentage: true,
-                              showChartValuesOutside: true,
-                              decimalPlaces: 1,
-                            ),
-                            // gradientList: ---To add gradient colors---
-                            // emptyColorGradient: ---Empty Color gradient---
-                          ),
-                  ],
-                ),
+          return SingleChildScrollView(
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Image.asset(
+                assets.kIconBook,
+                fit: BoxFit.cover,
               ),
-            )
-          ]);
+              Card(
+                margin: const EdgeInsets.all(16),
+                elevation: 10,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32)),
+                color: colors.lavender,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 8,8,24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                     state.expensePurposeList != [] && state.expensePurposeList.isNotEmpty? Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          'Còn lại: ${state.expensePurposeList.where((element) => element.id == 1).single.totalExpense}',
+                          style: const TextStyle(
+                              color: colors.spanishLavender,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ): const SizedBox(),
+                      _buildForm(state: state),
+                      state.totalIncome == null
+                          ? const SizedBox()
+                          : PieChart(
+                              // totalValue: state.totalIncome.totalIncome,
+          
+                              dataMap: state.dataMap,
+                              animationDuration:
+                                  const Duration(milliseconds: 1000),
+                              // chartLegendSpacing: 32,
+                              chartRadius:
+                                  MediaQuery.of(context).size.width / 3.2,
+                              colorList: colorList,
+                              initialAngleInDegree: 0,
+                              chartType: ChartType.ring,
+                              ringStrokeWidth: 32,
+                              centerText:
+                                  state.totalIncome!.totalIncome.toString(),
+                              legendOptions: const LegendOptions(
+                                showLegendsInRow: false,
+                                legendPosition: LegendPosition.right,
+                                showLegends: true,
+                                legendShape: BoxShape.circle,
+                                legendTextStyle: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              chartValuesOptions: const ChartValuesOptions(
+                                showChartValueBackground: true,
+                                showChartValues: true,
+                                showChartValuesInPercentage: true,
+                                showChartValuesOutside: true,
+                                decimalPlaces: 1,
+                              ),
+                              // gradientList: ---To add gradient colors---
+                              // emptyColorGradient: ---Empty Color gradient---
+                            ),
+                    ],
+                  ),
+                ),
+              )
+            ]),
+          );
         }
         return CircularProgressIndicator();
       }),
