@@ -18,3 +18,8 @@ const  inchworm = Color(0xffaaf255);
 const  brilliantRose = Color(0xffef4fa6);
 const  pastelOrange = Color(0xffffaf49);
 const  googerBuster = Color(0xffDCE775);
+
+
+
+const rossoCorsa = Color(0xffD50000);
+const lavenderBlush = Color(0xffFFEBEE);

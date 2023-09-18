@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_manager/presentations/common/colors.dart' as colors;
 import 'package:personal_manager/presentations/screen/home_view.dart';
 
-import '../../logic_bussiness/home/category/bloc/category_bloc.dart';
+import '../../logic_bussiness/home/category/category/category_bloc.dart';
 import '../../logic_bussiness/home/home/home_bloc.dart';
 import 'statistical/category_view.dart';
 

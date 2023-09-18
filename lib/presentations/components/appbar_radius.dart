@@ -28,26 +28,28 @@ import 'package:personal_manager/presentations/common/colors.dart' as colors;
 // }
 class AppbarRadius extends StatelessWidget implements PreferredSizeWidget {
   final Widget child;
-  final double height;
+  final double? height;
+  final BorderRadius? borderRadius;
 
-  const AppbarRadius({
+  const AppbarRadius({super.key, 
     required this.child,
+    this.borderRadius,
     this.height = kToolbarHeight,
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(height);
+  Size get preferredSize => Size.fromHeight(height?? 120);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
+      decoration:  BoxDecoration(
+          borderRadius: borderRadius ?? const BorderRadius.only(
             bottomLeft: Radius.circular(64),
             bottomRight: Radius.circular(64),
           ),
           color: colors.darkLiver),
-      height: preferredSize.height,
+      height:  preferredSize.height,
       alignment: Alignment.center,
       child: child,
     );

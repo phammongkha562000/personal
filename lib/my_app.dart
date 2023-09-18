@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'data/services/injection/injection.dart';
+import 'data/services/navigator/navigator.dart';
+import 'data/services/navigator/generate_route.dart' as router;
+
 import 'presentations/common/theme.dart';
 import 'presentations/screen/home_page.dart';
 
@@ -12,6 +16,8 @@ class MyApp extends StatelessWidget {
         theme: theme(),
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
-        home: const HomePage());
+        home: const HomePage(),    navigatorKey: getIt<NavigationService>().navigatorKey,
+      onGenerateRoute: router.generateRoute,);
+        
   }
 }

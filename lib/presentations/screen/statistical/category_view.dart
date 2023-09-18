@@ -2,11 +2,16 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:personal_manager/data/services/navigator/navigation_service.dart';
 
 import 'package:personal_manager/presentations/common/colors.dart' as colors;
 import 'package:personal_manager/presentations/common/assets.dart' as assets;
 import 'package:transformable_list_view/transformable_list_view.dart';
-import '../../../logic_bussiness/home/category/bloc/category_bloc.dart';
+import '../../../data/services/injection/injection.dart';
+import '../../../data/services/navigator/route_path.dart' as routes;
+import 'package:personal_manager/presentations/common/key_params.dart' as key_params;
+
+import '../../../logic_bussiness/home/category/category/category_bloc.dart';
 import '../../components/appbar_radius.dart';
 
 class CategoryView extends StatefulWidget {
@@ -72,6 +77,7 @@ List<Color> colorText = [
 ];
 
 class _CategoryViewState extends State<CategoryView> {
+  final _navigationService = getIt<NavigationService>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,9 +97,10 @@ class _CategoryViewState extends State<CategoryView> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 getTransformMatrix: getTransformMatrix,
                 itemBuilder: (context, index) {
+                  final item = state.expensePurposeList[index];
                   return Container(
                     height: 100,
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 4,
@@ -105,33 +112,37 @@ class _CategoryViewState extends State<CategoryView> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     alignment: Alignment.center,
-                    child: Row(
-                      children: [
-                        Image.asset(assets.kIconMoney),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                state.expensePurposeList[index].name ?? '',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18,
-                                  color: colorText[index],
+                    
+                    child: InkWell(
+                      onTap: ()=>   _navigationService.pushNamed(routes.categoryDetailRoute,args: {key_params.expenseItem: item} ),
+                      child: Row(
+                        children: [
+                          Image.asset(assets.kIconMoney),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  item.name ?? '',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                    color: colorText[index],
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                'Chiếm ${state.expensePurposeList[index].totalExpense! / state.totalIncome.totalIncome! * 100}% thu nhập',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
+                                Text(
+                                  'Chiếm ${item.totalExpense! / state.totalIncome.totalIncome! * 100}% thu nhập',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              Text('Đã sử dụng 50%'),
-                            ],
-                          ),
-                        )
-                      ],
+                                Text('Đã sử dụng 50%'),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -139,7 +150,7 @@ class _CategoryViewState extends State<CategoryView> {
               ),
             );
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         },
       ),
     );

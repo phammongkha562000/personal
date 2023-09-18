@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 import 'package:personal_manager/data/model/home/expense_purpose.dart';
+import 'package:personal_manager/data/model/home/expense_purpose_detail.dart';
 import 'package:personal_manager/data/model/home/total_income.dart';
 import 'package:personal_manager/data/shared/utils/date/date_format/datetime_format.dart';
 
@@ -109,8 +110,33 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           };
           dataMap.addAll(newItem);
         }
+        int date = DateTime.now().millisecondsSinceEpoch;
+
         final box = await Hive.openBox(KeyBox.boxExpensePurpose);
         box.put(KeyName.expensePurposeKey, itemTestNew2);
+        final boxDetail = await Hive.openBox(KeyBox.boxEPDetail);
+        final dataDetail = await boxDetail.get(KeyName.ePDetailKey);
+        ExpensePurposeDetail itemDetail;
+        List<ExpensePurposeDetail> detailList = [];
+        if (dataDetail != null) {
+          detailList = dataDetail.cast<ExpensePurposeDetail>();
+          itemDetail = ExpensePurposeDetail(
+              id: detailList.length + 1,
+              name: 'Còn lại',
+              fee: event.item.totalExpense,
+              idExpensePurpose: event.item.id,
+              dateTime: date);
+          detailList.add(itemDetail);
+        } else {
+          itemDetail = ExpensePurposeDetail(
+              id: 1,
+              name: 'Còn lại',
+              fee: event.item.totalExpense,
+              idExpensePurpose: event.item.id,
+              dateTime: date);
+          detailList.add(itemDetail);
+        }
+        boxDetail.put(KeyName.ePDetailKey, detailList);
         emit(currentState.copyWith(
           dataMap: dataMap,
           expensePurposeList: itemTestNew2,
